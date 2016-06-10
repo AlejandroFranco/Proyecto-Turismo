@@ -2,8 +2,7 @@
 SQLyog Trial v12.2.3 (64 bit)
 MySQL - 10.1.13-MariaDB : Database - db_turismo
 *********************************************************************
-*/
-
+*/
 
 /*!40101 SET NAMES utf8 */;
 
@@ -115,7 +114,7 @@ CREATE TABLE `restaurante` (
   `pagina` varchar(255) DEFAULT NULL,
   `numero` varchar(255) DEFAULT NULL,
   `nombre` varchar(255) DEFAULT NULL,
-  `id_Lugar` int(10) DEFAULT NdULL,
+  `id_Lugar` int(10) DEFAULT NULL,
   `id_Archivo` int(10) DEFAULT NULL,
   PRIMARY KEY (`id_Restaurante`),
   KEY `id_Lugar` (`id_Lugar`),
@@ -135,9 +134,12 @@ CREATE TABLE `rol` (
   `nombre` varchar(255) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_Rol`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 /*Data for the table `rol` */
+
+insert  into `rol`(`id_Rol`,`nombre`,`descripcion`) values 
+(1,'usuario','puede hacer consultas');
 
 /*Table structure for table `usuario` */
 
@@ -155,11 +157,12 @@ CREATE TABLE `usuario` (
   PRIMARY KEY (`id_Usuario`),
   KEY `id_Rol` (`id_Rol`),
   CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_Rol`) REFERENCES `rol` (`id_Rol`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 /*Data for the table `usuario` */
 
-insert  into `usuario`(`id_Usuario`,`nombre`,`correo`,`contraseña`,`nick`,`telefono`,`nacionalidad`,`id_Rol`) values (1,'Pablo Franco','pabloalejandrofranco@outlook.com','contraseña','alefranco',54554163,'Guatemala',1);
+insert  into `usuario`(`id_Usuario`,`nombre`,`correo`,`contraseña`,`nick`,`telefono`,`nacionalidad`,`id_Rol`) values 
+(1,'Pablo Franco','pabloalejandrofranco@outlook.com','202cb962ac59075b964b07152d234b70','alefranco',54554163,'Guatemala',1);
 
 /* Procedure structure for procedure `sp_autenticarUsuario` */
 
@@ -167,38 +170,25 @@ insert  into `usuario`(`id_Usuario`,`nombre`,`correo`,`contraseña`,`nick`,`tele
 
 DELIMITER $$
 
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autenticarUsuario`(IN _nick varchar(128),in _contraseña varchar(128))
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autenticarUsuario`(IN _correo varchar(128),in _contraseña varchar(128))
 BEGIN
-	select nombre,correo,nick from usuario where usuario.`nick`=_nick and usuario.`contraseña`=md5(_contraseña);
+	select nombre,correo,nick from usuario where usuario.`correo`=_correo and usuario.`contraseña`=md5(_contraseña);
     END */$$
 DELIMITER ;
 
-/* Procedure structure for procedure `sp_listaUsuarios` */
+/* Procedure structure for procedure `sp_listacontactos` */
 
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_listaUsuarios` */;
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_listacontactos` */;
 
 DELIMITER $$
 
 /*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_listacontactos`(in _id_Rol int)
 BEGIN
-	SELECT usuario.id_Usuario,usuario.nombre,usuario.correo,usuario.nick,usuario.direccion,usuario.nombre,usuario.telefono,rol.nombre AS  rol,rol.id_Rol FROM usuario
-	LEFT JOIN rol ON rol.id_Rol=usuario.id_Rol
+	SELECT usuario.`id_Usuario`,usuario.nombre,usuario.correo,usuario.`contraseña`,usuario.`nick`,usuario.`telefono`,usuario.`nacionalidad`,rol.nombre AS  rol,rol.id_Rol FROM usuario
+	LEFT JOIN rol ON rol.idRol=usuario.`id_Rol`
 	where rol.id_Rol=_id_Rol;
     END */$$
 DELIMITER ;
-
-/* Procedure structure for procedure `sp_registroUsuario` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_registroUsuario` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registroUsuario`(IN _nombre varchar(128),IN _correo varchar(128),in _nick varchar(128),_contraseña varchar(128),in _direccion varchar(128),in _telefono int(11),in _rol int)
-BEGIN
-	insert into usuario values(null,_nombre,_correo,_nick,md5(_contraseña),_direccion,_telefono,2);
-    END */$$
-DELIMITER ;
-
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
